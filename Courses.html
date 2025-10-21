@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="eng">
+<head>
+ <meta charset="utf-8">
+ <title>SRNKGDCBANSWADA.COM</title>
+ <style>
+   #Bsc, #bsc, #bcom, .BA{
+     border: solid 2px black;
+     margin-bottom: 5px;
+     padding: 8px;
+   }
+   #Bsc{ background-color:rgba(10,211,86,0.116); }
+   #bsc{ background-color:rgba(10,215,1,0.116); }
+   #bcom{ background-color:rgba(255,165,0,0.116); }
+   .BA{ background:rgb(114,225,213); }
+
+   #S{
+     margin-left:90px;
+     margin-top: 10px;
+     border-radius: 5px;
+     padding: 5px 15px;
+     cursor: pointer;
+   }
+   .BACHLOR{
+     text-align: center;
+     margin-left: 10px;
+     display: block;
+   }
+
+   #medium{
+     cursor: pointer;
+     font-size: 40px;
+     display: block;
+   }
+   #menu {
+     display: none;
+     flex-direction: column;
+     background: #555;
+     margin-bottom:10px;
+   }
+   #menu a{
+     color: white;
+     padding:10px;
+     border-bottom: solid 1px #765;
+     text-decoration: none;
+   }
+   #menu.active{ display: flex; }
+   #menu a:hover{ background-color: #635; }
+
+   /* Hidden by default */
+   .extra-courses {
+     display: none;
+   }
+   .extra-courses.active {
+     display: block;
+   }
+ </style>
+</head> 
+<body>
+  <!-- Navbar -->
+  <header>
+    <nav id="medium">&#9776;</nav>
+    <div id="menu">
+      <a href="index.html">HOME</a>
+      <a href="About us.html">ABOUT US</a>
+      <a href="Courses.html">COURSES</a>
+      <a href="signup.html">SIGN UP</a>
+      <a href="register.html">REGISTER</a>
+    </div>
+  </header>
+
+  <!-- BSC Physical Science -->
+  <div id="Bsc">
+   <form id="B">
+     <ul>
+       <label><b>BSC PHYSICAL SCIENCE</b></label>
+       <li>Mathematics, Physics, Chemistry (MPC)</li> 
+       <li>Mathematics, Physics, Computer Science (MPCS)</li>
+     </ul>
+   </form>
+  </div>
+
+  <!-- BSC Life Science -->
+  <div id="bsc">
+    <form id="b">
+      <ul>
+        <label><b>BSC LIFE SCIENCE</b></label>
+        <li>Botany, Zoology, Chemistry (BZC)</li>
+        <li>Botany, Zoology, Crop Production (BZCP)</li>
+        <li>Botany, Zoology, Computer Science (BSCS)</li>
+        <li>Microbiology, Zoology, Chemistry (MZC)</li>
+        <li>Microbiology, Zoology, Computer Science (MZCS)</li>
+      </ul>
+    </form>
+  </div>
+
+  <!-- Extra courses hidden initially -->
+  <div class="extra-courses">
+    <!-- B.Com Section -->
+    <div id="bcom">
+      <form id="c">
+        <ul>
+          <label><b>BACHELOR OF COMMERCE (B.COM)</b></label>
+          <li>General</li>
+          <li>Computer Applications</li>
+          <li>Taxation</li>
+          <li>Accounting & Finance</li>
+        </ul>
+      </form>
+    </div>
+
+    <!-- BA Section -->
+    <div class="BA">
+      <form id="Arts">
+        <label class="BACHLOR"><b>BACHELOR OF ARTS</b></label>
+        <ul>
+          <li>Economics, Public Administration, Political Science (EPP)</li>
+          <li>History, Public Administration, Political Science (HPP)</li>
+          <li>Economics, Public Administration, Computer Science</li>
+          <li>History, Public Administration, Computer Science</li>
+        </ul>
+      </form>
+    </div>
+  </div>
+
+  <!-- Show more button -->
+  <button id="S">
+    SHOW MORE COURSES
+  </button>   
+
+  <script>
+    // Navbar toggle
+    const menuBtn = document.querySelector('#medium');
+    const menu = document.querySelector('#menu');
+    menuBtn.addEventListener('click', () => {
+      menu.classList.toggle('active');
+    });
+
+    // Show more courses toggle
+    const showBtn = document.querySelector('#S');
+    const extraCourses = document.querySelector('.extra-courses');
+
+    showBtn.addEventListener('click', () => {
+      extraCourses.classList.toggle('active');
+      if(extraCourses.classList.contains('active')){
+        showBtn.textContent = "SHOW LESS COURSES";
+      } else {
+        showBtn.textContent = "SHOW MORE COURSES";
+      }
+    });
+  </script>
+</body>
+</html>

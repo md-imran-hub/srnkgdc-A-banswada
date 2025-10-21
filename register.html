@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SRNK Student Registration Form</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+    padding: 20px;
+  }
+  .form-container {
+    max-width: 650px;
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  h2 {
+    text-align: center;
+    color: #003399;
+    margin-bottom: 20px;
+  }
+  label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  input, select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+  button {
+    margin-top: 20px;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .submit-btn { background: #0066cc; color: white; }
+  .print-btn { background: #009933; color: white; margin-left: 10px; }
+  button:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+    transition: 0.2s ease;
+  }
+</style>
+</head>
+<body>
+
+<div class="form-container">
+  <h2>SRNK GOVERNMENT DEGREE COLLEGE, BANSWADA</h2>
+  <form id="Form">
+    <label>Full Name</label>
+    <input type="text" id="name" required>
+
+    <label>Father Name</label>
+    <input type="text" id="father" required>
+
+    <label>Mother Name</label>
+    <input type="text" id="mother" required>
+
+    <label>Aadhar Number</label>
+    <input type="text" id="aadhar" pattern="\d{12}" minlength="12" maxlength="12"
+           title="Aadhar number must be exactly 12 digits" required>
+
+    <label>Intermediate Roll No</label>
+    <input type="text" id="rollno" pattern="\d{10}" minlength="10" maxlength="10"
+           title="Roll number must be exactly 10 digits" required>
+
+    <label>Date of Birth</label>
+    <input type="date" id="dob" required>
+
+    <label>Residence</label>
+    <input type="text" id="residence" required>
+
+    <label>State</label>
+    <select id="state" required>
+      <option value="Telangana">Telangana</option>
+    </select>
+
+    <label>District</label>
+    <select id="district" required></select>
+
+    <label>Village</label>
+    <select id="village" required></select>
+
+    <label>Branch</label>
+    <select id="branch" required>
+      <option value="">-- Select Branch --</option>
+    </select>
+
+    <label>Group</label>
+    <select id="group" required>
+      <option value="">-- Select Group --</option>
+    </select>
+
+    <label>Upload Passport Photo</label>
+    <input type="file" id="photo" accept="image/*" required>
+
+    <button type="submit" class="submit-btn">Download PDF</button>
+    <button type="button" class="print-btn" onclick="printPDF()">Print PDF</button>
+  </form>
+</div>
+
+<!-- ✅ jsPDF Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+// Telangana Districts & Villages
+const villagesData = {
+  "Nizamabad": ["Armoor", "Bheemgal", "Dichpally", "Nandipet", "Navipet"],
+  "Kamareddy": ["Banswada", "Pitlam", "Tadwai", "Domakonda", "Sadashivanagar","Jukkal","Bichkunda","Madnoor"],
+  "Medak": ["Ramayampet", "Shankarampet", "Narsapur", "Papannapet", "Tekmal"],
+  "Sangareddy": ["Zaheerabad", "Jharasangam", "Kohir", "Mogudampally", "Nyalkal"],
+  "Hyderabad": ["Charminar", "Golconda", "Shaikpet", "Ameerpet", "Secunderabad"]
+};
+
+// Branches & Groups
+const groupdata = {
+  "Bsc-Physical Science": ["Mpcs", "Mpc"],
+  "Bsc-Life Science": ["Bzc","Bzcs","Bzcp","Mzc","Mzcs"],
+  "B.com": ["B.com General", "B.com Computer"]
+};
+
+// Dropdowns
+const districtSelect = document.getElementById("district");
+const villageSelect = document.getElementById("village");
+const branchselect = document.getElementById("branch");
+const groupselect = document.getElementById("group");
+
+// Populate Districts
+Object.keys(villagesData).forEach(dist => {
+  const opt = document.createElement("option");
+  opt.value = dist;
+  opt.textContent = dist;
+  districtSelect.appendChild(opt);
+});
+
+// Populate Villages
+districtSelect.addEventListener("change", function(){
+  villageSelect.innerHTML = "<option value=''>-- Select Village --</option>";
+  const selectedDistrict = this.value;
+  if(villagesData[selectedDistrict]){
+    villagesData[selectedDistrict].forEach(vil => {
+      const opt = document.createElement("option");
+      opt.value = vil;
+      opt.textContent = vil;
+      villageSelect.appendChild(opt);
+    });
+  }
+});
+
+// Populate Branches
+Object.keys(groupdata).forEach(branch => {
+  const opt = document.createElement("option");
+  opt.value = branch;
+  opt.textContent = branch;
+  branchselect.appendChild(opt);
+});
+
+// Populate Groups
+branchselect.addEventListener("change", function(){
+  groupselect.innerHTML = "<option value=''>-- Select Group --</option>";
+  const selectedBranch = this.value;
+  if(groupdata[selectedBranch]){
+    groupdata[selectedBranch].forEach(grp => {
+      const opt = document.createElement("option");
+      opt.value = grp;
+      opt.textContent = grp;
+      groupselect.appendChild(opt);
+    });
+  }
+});
+
+// ✅ Generate PDF Function (with SRNK Logo)
+function generatePDF(callback){
+  const name = document.getElementById("name").value;
+  const father = document.getElementById("father").value;
+  const mother = document.getElementById("mother").value;
+  const aadhar = document.getElementById("aadhar").value;
+  const rollno = document.getElementById("rollno").value;
+  const dob = document.getElementById("dob").value;
+  const residence = document.getElementById("residence").value;
+  const state = document.getElementById("state").value;
+  const district = document.getElementById("district").value;
+  const village = document.getElementById("village").value;
+  const branch = document.getElementById("branch").value;
+  const group = document.getElementById("group").value;
+  const photoFile = document.getElementById("photo").files[0];
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // ✅ Add SRNK Logo (replace link with your hosted image)
+  const logoUrl = "https://i.imgur.com/kH0f3cn.png"; // sample hosted logo
+  const logoImg = new Image();
+  logoImg.crossOrigin = "anonymous";
+  logoImg.src = logoUrl;
+
+  logoImg.onload = function() {
+    // Add logo
+    doc.addImage(logoImg, "PNG", 15, 5, 30, 30);
+
+    // College Heading
+    doc.setFontSize(18);
+    doc.setTextColor(0,0,150);
+    doc.text("SRNK GOVERNMENT DEGREE COLLEGE, BANSWADA", 50, 15);
+    doc.setFontSize(14);
+    doc.text("STUDENT REGISTRATION FORM", 80, 25);
+
+    // Draw Table
+    let startX = 15, startY = 40, rowHeight = 10, col1Width = 60, col2Width = 120;
+    const data = [
+      ["Full Name", name],
+      ["Father Name", father],
+      ["Mother Name", mother],
+      ["Aadhar Number", aadhar],
+      ["Intermediate Roll No", rollno],
+      ["Date of Birth", dob],
+      ["Residence", residence],
+      ["State", state],
+      ["District", district],
+      ["Village", village],
+      ["Branch", branch],
+      ["Group", group]
+    ];
+
+    data.forEach((row,i) => {
+      if(i%2 === 0) {
+        doc.setFillColor(240,240,255);
+        doc.rect(startX, startY + i*rowHeight, col1Width+col2Width, rowHeight, 'F');
+      }
+      doc.rect(startX, startY + i*rowHeight, col1Width, rowHeight);
+      doc.rect(startX+col1Width, startY + i*rowHeight, col2Width, rowHeight);
+      doc.setFontSize(12);
+      doc.setTextColor(0,0,0);
+      doc.text(row[0], startX + 2, startY + 7 + i*rowHeight);
+      doc.text(row[1], startX + col1Width + 2, startY + 7 + i*rowHeight);
+    });
+
+    // Add student photo (if uploaded)
+    if(photoFile){
+      const reader = new FileReader();
+      reader.onload = function(e){
+        const imgData = e.target.result;
+        doc.addImage(imgData, "JPEG", 160, 5, 35, 35);
+
+        // Add footer
+        doc.setFontSize(12);
+        doc.text("Date: " + new Date().toLocaleDateString(), 15, 170);
+        doc.text("Student Signature: ______________________", 120, 170);
+
+        callback(doc);
+      };
+      reader.readAsDataURL(photoFile);
+    } else {
+      doc.text("Date: " + new Date().toLocaleDateString(), 15, 170);
+      doc.text("Student Signature: ______________________", 120, 170);
+      callback(doc);
+    }
+  };
+}
+
+// Download PDF
+document.getElementById("Form").addEventListener("submit", function(e){
+  e.preventDefault();
+  generatePDF(function(doc){
+    doc.save("SRNK_Student_Form.pdf");
+  });
+});
+
+// Print PDF
+function printPDF(){
+  generatePDF(function(doc){
+    window.open(doc.output('bloburl'), '_blank').print();
+  });
+}
+</script>
+</body>
+</html>
