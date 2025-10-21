@@ -1,1 +1,1 @@
-# srnkgdc-A-banswada
+srnkgdcbanswda.in
